@@ -29,7 +29,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: "~> v2"
-          args: build --auto-snapshot --clean
+          args: build --snapshot --clean
 
       - name: Run test
         run: go test -v
