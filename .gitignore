@@ -1,2 +1,4 @@
 *.exe
 bin
+dist
+ecr-credential-provider
