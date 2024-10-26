@@ -26,7 +26,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ github.env.GO_VERSION }}
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
@@ -58,8 +58,8 @@ jobs:
         v${{ github.ref_name }}
         latest
       build-labels: MAINTAINER=${{ github.repository_owner }}
-      build-args: BUILD_VERSION=${{ github.env.GO_VERSION }}-bookworm
       build-platforms: linux/amd64,linux/arm64,linux/s390x,linux/ppc64le
+      # build-args: BUILD_VERSION=${{ github.env.GO_VERSION }}-bookworm
     secrets:
       REGISTRY_USER: ${{ secrets.DOCKERHUB_USERNAME }}
       REGISTRY_PW: ${{ secrets.DOCKERHUB_TOKEN }}
