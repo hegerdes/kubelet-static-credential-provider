@@ -41,12 +41,14 @@ release:
     name: kubelet-static-credential-provider
   prerelease: auto
   header: |
-    ## {{ .ProjectName }} Version {{ .Version }}
+    ## {{ .ProjectName }} version {{ .Version }}
 
+    The provider allows user to pull images form private registries without having to deal with image pull-secrets.
     You can install the credential provider with:
     ```bash
-    export RELEASE_URL=<my-version>
-    wget https://$RELEASE_URL -O /var/lib/kubelet/plugins/static-credential-provider
+    wget https://<RELEASE_URL> -O static-credential-provider.tar.gz
+    mkdir -p /var/lib/kubelet-plugins/
+    tar xzf static-credential-provider.tar.gz -C /var/lib/kubelet-plugins/
     ```
 
     Check out the [Quickstart](https://github.com/hegerdes/kubelet-static-credential-provider?tab=readme-ov-file#quickstart) guide on how to configure your kubelet!
