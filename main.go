@@ -14,40 +14,42 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("Error reading input:", err)
+		fmt.Fprintln(os.Stderr, "Error reading input:", err)
 		return
 	}
 
 	// Parse the input JSON string
 	image, err := utils.GetRequestImage(input)
 	if err != nil {
-		fmt.Println("Error parsing JSON:", err)
+		fmt.Fprintln(os.Stderr, "Error parsing JSON:", err)
 		return
 	}
 	// Read values from environment variables or conf file
-	username := os.Getenv("SCP_REGISTRY_USERNAME")
-	password := os.Getenv("SCP_REGISTRY_PASSWORD")
-	cacheType := os.Getenv("CACHE_TYPE")
+	username := os.Getenv("KSCP_REGISTRY_USERNAME")
+	password := os.Getenv("KSCP_REGISTRY_PASSWORD")
+	cacheType := os.Getenv("KSCP_CACHE_TYPE")
+	cacheDuration := os.Getenv("KSCP_CACHE_DURATION")
 	if len(os.Args) > 2 {
 		arg1, val1 := os.Args[1], os.Args[2]
 		if arg1 == "--config" {
 			config, err := utils.GetConfig(val1)
 			if err != nil {
-				fmt.Println("Error reading config file:", err)
+				fmt.Fprintln(os.Stderr, "Error reading config file:", err)
 				return
 			}
 			username = config.Username
 			password = config.Password
 			cacheType = config.CacheType
+			cacheDuration = config.CacheDuration
 		}
 	}
 
 	if username == "" || password == "" {
-		fmt.Println("Error reading username or password from environment variables")
+		fmt.Fprintln(os.Stderr, "Error reading username or password from environment variables")
 		return
 	}
 	// Defaults to image cache type
 
-	resp := utils.CreateImageRequestResponse(image, username, password, cacheType)
+	resp := utils.CreateImageRequestResponse(image, username, password, cacheType, cacheDuration)
 	fmt.Println(resp)
 }

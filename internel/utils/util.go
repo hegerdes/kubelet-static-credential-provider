@@ -4,7 +4,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -16,28 +16,23 @@ import (
 )
 
 type Config struct {
-	Username  string `yaml:"username"`
-	Password  string `yaml:"password"`
-	CacheType string `yaml:"cache_type"`
+	Username      string `yaml:"username"`
+	Password      string `yaml:"password"`
+	CacheType     string `yaml:"cache_type"`
+	CacheDuration string `yaml:"cache_duration"`
 }
-
-// type CredentialProviderResponse struct {
-// 	kcpv1.CredentialProviderResponse
-// 	APIVersion string `json:"apiVersion"`
-// 	Kind       string `json:"kind"`
-// }
 
 func GetConfig(path string) (Config, error) {
 	var config Config
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Println("Error reading YAML file:", err)
+		fmt.Fprintln(os.Stderr, "Error reading YAML file:", err)
 		return config, err
 	}
 
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
-		fmt.Println("Error parsing YAML file:", err)
+		fmt.Fprintln(os.Stderr, "Error parsing YAML file:", err)
 		return config, err
 
 	}
@@ -66,21 +61,27 @@ var cacheTypeMap = map[string]kcpv1.PluginCacheKeyType{
 	"global":   kcpv1.GlobalPluginCacheKeyType,
 }
 
-func CreateImageRequestResponse(image, username, password, cachetype string) string {
+func CreateImageRequestResponse(image, username, password, cacheType, cacheDuration string) string {
 
 	// Set cache type
 	var usedCacheType = kcpv1.ImagePluginCacheKeyType
-	if value, ok := cacheTypeMap[strings.ToLower(cachetype)]; ok {
+	if value, ok := cacheTypeMap[strings.ToLower(cacheType)]; ok {
 		usedCacheType = value
 	}
 
 	// Set cache duration
-	duration, err := time.ParseDuration("8h")
+	if cacheDuration == "" {
+		cacheDuration = "8h"
+	}
+
+	// Set cache duration
+	duration, err := time.ParseDuration(cacheDuration)
 	if err != nil {
+		fmt.Fprintln(os.Stderr, "Unable to parse time:", err)
 		return ""
 	}
-	k8sDuration := metav1.Duration{Duration: duration}
 
+	k8sDuration := metav1.Duration{Duration: duration}
 	cred := kcpv1.CredentialProviderResponse{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "credentialprovider.kubelet.k8s.io/v1",
@@ -95,8 +96,8 @@ func CreateImageRequestResponse(image, username, password, cachetype string) str
 		}}
 	resp, err := json.Marshal(cred)
 	if err != nil {
+		fmt.Fprintln(os.Stderr, "Unable to encode response:", err)
 		return ""
 	}
-
 	return string(resp)
 }
