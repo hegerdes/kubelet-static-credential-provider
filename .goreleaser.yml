@@ -38,7 +38,14 @@ checksum:
 release:
   github:
     owner: hegerdes
-    name: kube-static-credential-provider
+    name: kubelet-static-credential-provider
+  prerelease: auto
+  header: |
+    ## Some title ({{ .Date }})
+
+    Welcome to this new release!
+  extra_files:
+    - glob: ./hack/*.sh
 
 changelog:
   sort: asc

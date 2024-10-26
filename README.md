@@ -1,14 +1,17 @@
 # Kubelet-static-credential-provider
 ---
+[![Test Build](https://github.com/hegerdes/kubelet-static-credential-provider/actions/workflows/test.yml/badge.svg)](https://github.com/hegerdes/kubelet-static-credential-provider/actions/workflows/test.yml)
+![GitHub Release](https://img.shields.io/github/v/release/hegerdes/kubelet-static-credential-provider)
+
 
 This plugin implements the [kubernetes credential-provider-api](https://kubernetes.io/docs/reference/config-api/kubelet-credentialprovider.v1/). This allows users to pull images from private image registries without having to create and reference a `image-pull-secret` in every namespace and deployment.
 
-AWS, Azure and Google all use their own version of this plugin protocol to allow user friendly image pulls from their hosted image registries. Now you can also use this developer friendly approach to pull images from your private registries or password protected pull-through caches of Dockerhub.
+AWS, Azure and Google all use their own version of this plugin protocol to allow user friendly image pulls from their hosted image registries. Now you can also use this developer friendly approach to pull images from your private registries or password protected pull-through caches of DockerHub.
 
 ## Quickstart
 Download with `wget https://<RELEASE_URL> -O /var/lib/kubelet/plugins/static-credential-provider` and create a Config:
 ```yaml
-# /srv/scp-con.yaml
+# /srv/kscp-conf.yaml
 apiVersion: kubelet.config.k8s.io/v1
 kind: CredentialProviderConfig
 providers:
@@ -19,13 +22,15 @@ providers:
     defaultCacheDuration: "12h"
     apiVersion: credentialprovider.kubelet.k8s.io/v1
     env:
-      - name: SCP_REGISTRY_USERNAME
+      - name: KSCP_REGISTRY_USERNAME
         value: <my-user>
-      - name: SCP_REGISTRY_PASSWORD
+      - name: KSCP_REGISTRY_PASSWORD
         value: <my-password>
 ```
 
-Add `--image-credential-provider-bin-dir=/var/lib/kubelet/plugins/` and `--image-credential-provider-config=/srv/scp-con.yaml` args to the kubelet startup args and restart the kubelet with `service kubelet restart`.
+Add `--image-credential-provider-bin-dir=/var/lib/kubelet/plugins/` and `--image-credential-provider-config=/srv/kscp-conf.yaml` args to the kubelet startup args and restart the kubelet with `service kubelet restart`.
+
+If you create a new cluster you can set these as your `kubeletExtraArgs` in your [Kubeadm NodeRegistrationOptions  under InitConfiguration](https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/#kubeadm-k8s-io-v1beta4-NodeRegistrationOptions) or manually edit the TODO file and add the above args. 
 
 **Note:** This credential-provider has to be present on every node in the cluster where you want to pull private images.
 
@@ -35,9 +40,13 @@ Add `--image-credential-provider-bin-dir=/var/lib/kubelet/plugins/` and `--image
  * Increase docker-pull rate-limit by always providing credentials
  * Smaller deployment config for developers
  * Use core components form protected/trusted registries - like `registry.k8s.io/kube-apiserver`
+ * Choose between a native go binary or a generic bash script.
 
 ## Example
 ```bash
+# You can also use the bash version in hack/static-credential-provider.sh
+export KSCP_REGISTRY_USERNAME=my-user
+export KSCP_REGISTRY_PASSWORD=my-password
 echo '
 {
   "apiVersion": "credentialprovider.kubelet.k8s.io/v1",
