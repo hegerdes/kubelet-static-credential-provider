@@ -5,12 +5,18 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+env:
+  GO_VERSION: "1.23"
+
 jobs:
-  release:
+  Release:
     name: Run GoReleaser
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,7 +26,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
@@ -29,3 +35,31 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        continue-on-error: true
+        with:
+          subject-path: |
+            dist/static-credential-provider_darwin_amd64_v1/*
+            dist/static-credential-provider_darwin_arm64/*
+            dist/static-credential-provider_linux_amd64_v1/*
+            dist/static-credential-provider_linux_arm64/*
+            dist/static-credential-provider_linux_ppc64le/*
+            dist/static-credential-provider_linux_s390x/*
+            dist/static-credential-provider_windows_amd64_v1/*
+            dist/static-credential-provider_windows_arm64/*
+
+  Push-Image:
+    uses: hegerdes/helper-suite/.github/workflows/reusable-docker-build.yml@main
+    with:
+      build-name: ${{ github.repository_owner }}/kubelet-static-credential-provider,ghcr.io/${{ github.repository_owner }}/kubelet-static-credential-provider
+      build-tags: |
+        v${{ github.ref_name }}
+        latest
+      build-labels: MAINTAINER=${{ github.repository_owner }}
+      build-args: BUILD_VERSION=${{ env.GO_VERSION }}-bookworm
+      build-platforms: linux/amd64,linux/arm64,linux/s390x,linux/ppc64le
+    secrets:
+      REGISTRY_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+      REGISTRY_PW: ${{ secrets.DOCKERHUB_TOKEN }}
