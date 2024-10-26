@@ -30,7 +30,7 @@ providers:
 
 Add `--image-credential-provider-bin-dir=/var/lib/kubelet/plugins/` and `--image-credential-provider-config=/srv/kscp-conf.yaml` args to the kubelet startup args and restart the kubelet with `service kubelet restart`.
 
-If you create a new cluster you can set these as your `kubeletExtraArgs` in your [Kubeadm NodeRegistrationOptions  under InitConfiguration](https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/#kubeadm-k8s-io-v1beta4-NodeRegistrationOptions) or manually edit the TODO file and add the above args. 
+If you create a new cluster you can set these as your `kubeletExtraArgs` in your [Kubeadm NodeRegistrationOptions  under InitConfiguration](https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/#kubeadm-k8s-io-v1beta4-NodeRegistrationOptions) or manually edit the `/var/lib/kubelet/kubeadm-flags.env` file and add the above args. 
 
 **Note:** This credential-provider has to be present on every node in the cluster where you want to pull private images.
 

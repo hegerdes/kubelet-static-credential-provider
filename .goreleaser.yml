@@ -49,7 +49,9 @@ release:
     wget https://$RELEASE_URL -O /var/lib/kubelet/plugins/static-credential-provider
     ```
 
-    Check out the [Quickstart](https://github.com/hegerdes/kubelet-static-credential-provider?tab=readme-ov-file#quickstart) guide on how to configure your kubelet:
+    Check out the [Quickstart](https://github.com/hegerdes/kubelet-static-credential-provider?tab=readme-ov-file#quickstart) guide on how to configure your kubelet!
+
+    You can verify the release binaries with the GitHub CLI: `gh attestation verify --owner hegerdes <binary>`
 
   extra_files:
     - glob: ./hack/*.sh
