@@ -23,6 +23,7 @@ And create a Config:
 apiVersion: kubelet.config.k8s.io/v1
 kind: CredentialProviderConfig
 providers:
+  # The name must match the name of the credential-provider binary
   - name: static-credential-provider
     # You can also use a config file instead of envs
     # args:[--config, <path-to-password-conf>]
@@ -34,6 +35,7 @@ providers:
         value: <my-user>
       - name: KSCP_REGISTRY_PASSWORD
         value: <my-password>
+  # Optional: More credential providers
 ```
 
 Add the following args to the kubelet startup args and restart the kubelet with `service kubelet restart`.
