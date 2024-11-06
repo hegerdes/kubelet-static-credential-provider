@@ -15,14 +15,14 @@ func main() {
 	input, err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error reading input:", err)
-		return
+		os.Exit(1)
 	}
 
 	// Parse the input JSON string
 	image, err := utils.GetRequestImage(input)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error parsing JSON:", err)
-		return
+		os.Exit(1)
 	}
 	// Read values from environment variables or conf file
 	username := os.Getenv("KSCP_REGISTRY_USERNAME")
@@ -35,7 +35,7 @@ func main() {
 			config, err := utils.GetConfig(val1)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error reading config file:", err)
-				return
+				os.Exit(1)
 			}
 			username = config.Username
 			password = config.Password
@@ -46,7 +46,7 @@ func main() {
 
 	if username == "" || password == "" {
 		fmt.Fprintln(os.Stderr, "Error reading username or password from environment variables")
-		return
+		os.Exit(1)
 	}
 	// Defaults to image cache type
 
