@@ -17,7 +17,7 @@ wget https://<RELEASE_URL> -O static-credential-provider.tar.gz
 mkdir -p /var/lib/kubelet-plugins/
 tar xzf static-credential-provider.tar.gz -C /var/lib/kubelet-plugins/
 ```
-And create a Config:
+And create a config:
 ```yaml
 # /srv/kscp-conf.yaml
 apiVersion: kubelet.config.k8s.io/v1
@@ -56,7 +56,6 @@ If you create a new cluster you can set these as your `kubeletExtraArgs` in your
 
 ## Example
 ```bash
-# You can also use the bash version in hack/static-credential-provider.sh
 export KSCP_REGISTRY_USERNAME=my-user
 export KSCP_REGISTRY_PASSWORD=my-password
 echo '
@@ -68,7 +67,7 @@ echo '
 ```
 
 ## Alternatives
- * There is a pure bash version in the [hack] folder that should work on every linux system with jq installed. It is also included in every release.
+ * There is a pure bash version in the [hack](/hack) folder that should work on every linux system with jq installed. It is also included in every release.
  * There is a python implementation from [JonTheNiceGuy](https://github.com/JonTheNiceGuy) see [generic-credential-provider](https://github.com/JonTheNiceGuy/generic-credential-provider)
  * There is the [AWS ECR](https://cloud-provider-aws.sigs.k8s.io/credential_provider/) variant that is used by default for ever EKS cluster
 
