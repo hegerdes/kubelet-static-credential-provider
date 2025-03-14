@@ -3,3 +3,4 @@ bin
 dist
 ecr-credential-provider
 main
+static-credential-provider
