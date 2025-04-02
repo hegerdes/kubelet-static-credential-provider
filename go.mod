@@ -5,8 +5,8 @@ toolchain go1.24.1
 
 require (
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/apimachinery v0.32.2
-	k8s.io/kubelet v0.32.2
+	k8s.io/apimachinery v0.32.3
+	k8s.io/kubelet v0.32.3
 )
 
 require (
